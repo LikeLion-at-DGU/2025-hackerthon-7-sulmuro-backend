@@ -1,0 +1,22 @@
+package com.example.sulmuro_app.service.test;
+
+import com.example.sulmuro_app.domain.test.Test;
+import com.example.sulmuro_app.dto.test.request.TestCreateRequest;
+import com.example.sulmuro_app.dto.test.response.TestResponse;
+import com.example.sulmuro_app.repository.test.TestRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor // Lombok 어노테이션
+@Service
+public class TestService {
+
+    private final TestRepository testRepository;
+
+    @Transactional
+    public TestResponse saveTestData(TestCreateRequest request) {
+        Test savedTest = testRepository.save(new Test(request.getName()));
+        return new TestResponse(savedTest.getName());
+    }
+}

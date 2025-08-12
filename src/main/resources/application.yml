@@ -1,0 +1,54 @@
+# ==================================================================
+# 공통 설정
+# ==================================================================
+spring:
+  application:
+    name: sulmuro-app
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+---
+# ==================================================================
+# local (개발) 환경 전용 설정
+# ==================================================================
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    # 한글 깨짐 방지 및 시간대 설정
+    url: "jdbc:mysql://localhost:3306/sulmuro?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=UTF-8"
+    username: root
+    password: ${DB_LOCAL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+---
+# ==================================================================
+# prod (배포) 환경 전용 설정
+# ==================================================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
