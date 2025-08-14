@@ -7,6 +7,11 @@ spring:
   profiles:
     active: local
 
+  servlet:
+    multipart:
+      max-file-size: 5MB   # 개별 파일의 최대 크기를 10MB로 설정
+      max-request-size: 10MB # 한 번의 요청에 포함된 모든 파일의 총 크기를 10MB로 설정
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -15,6 +20,13 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+
+# ==================================================================
+# Google Cloud AI 설정
+# ==================================================================
+gemini:
+  model-name: "gemini-2.0-flash-lite-001"
+  api-key: ${GEMINI_API_KEY}
 
 ---
 # ==================================================================
