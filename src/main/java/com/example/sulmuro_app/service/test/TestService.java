@@ -19,4 +19,15 @@ public class TestService {
         Test savedTest = testRepository.save(new Test(request.getName()));
         return new TestResponse(savedTest.getName());
     }
+
+    @Transactional(readOnly = true)
+    public byte[] getImage(Long testId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 테스트 데이터가 없습니다. id=" + testId));
+
+        if (test.getImageData() == null) {
+            throw new IllegalArgumentException("해당 데이터에 이미지가 없습니다. id=" + testId);
+        }
+        return test.getImageData();
+    }
 }
