@@ -17,6 +17,9 @@ public class Test {
     @Column(nullable = false)
     private String name;
 
+    @Lob // Large Object의 약자. 이미지/영상 등 대용량 데이터를 저장하는데 사용
+    @Column(name = "image_data", columnDefinition="LONGBLOB") // DB 컬럼과 매핑
+    private byte[] imageData;
 
     public Test(String name) {
         this.name = name;
