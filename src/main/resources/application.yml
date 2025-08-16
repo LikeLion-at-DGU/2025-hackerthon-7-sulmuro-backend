@@ -43,7 +43,7 @@ spring:
     password: ${DB_LOCAL_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
 ---
 # ==================================================================
