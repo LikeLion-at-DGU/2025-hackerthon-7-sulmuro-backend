@@ -9,6 +9,7 @@ public enum PlaceCategory {
     FOOD,
     Clothes,
     Goods,
+    CAFE,
     Bar;
 
     @JsonCreator

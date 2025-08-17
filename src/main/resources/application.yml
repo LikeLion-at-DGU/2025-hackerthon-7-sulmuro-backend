@@ -43,7 +43,21 @@ spring:
     password: ${DB_LOCAL_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+
+app:
+  upload:
+    root: ${user.home}/uploads
+    public-base-url: http://localhost:8080/uploads
+
+
 
 ---
 # ==================================================================

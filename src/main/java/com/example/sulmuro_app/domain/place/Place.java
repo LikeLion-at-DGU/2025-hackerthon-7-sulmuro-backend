@@ -13,7 +13,8 @@ public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long place_id;
+    @Column(name ="place_id")
+    private Long placeId;
 
     @Column(nullable = false, length = 255)
     private String name;
@@ -37,8 +38,8 @@ public class Place {
     @Column
     private Long image_id; // FK, 관계 매핑은 나중에 가능
 
-    @Column(nullable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
+    @Column(nullable = false,name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -61,14 +62,14 @@ public class Place {
 
     @PrePersist
     protected void onCreate() {
-        if (this.created_at == null) this.created_at = LocalDateTime.now();
+        if (this.createdAt == null) this.createdAt = LocalDateTime.now();
     }
 
     // ===== Getter / Setter =====
 
 
     public Long getPlace_id() {
-        return place_id;
+        return placeId;
     }
 
     public String getName() {
@@ -100,7 +101,7 @@ public class Place {
     }
 
     public LocalDateTime getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public Location getLocation() {

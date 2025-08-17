@@ -30,10 +30,7 @@ public class PlaceController {
 
     @GetMapping
     public ApiResponse<List<PlaceListResponse>> getAllPlaces() {
-        List<PlaceListResponse> places = placeRepository.findAll()
-                .stream()
-                .map(PlaceListResponse::new)
-                .collect(Collectors.toList());
+        List<PlaceListResponse> places = placeService.findList();
         return ApiResponse.success("전체 장소 목록 조회 성공", places);
     }
 
