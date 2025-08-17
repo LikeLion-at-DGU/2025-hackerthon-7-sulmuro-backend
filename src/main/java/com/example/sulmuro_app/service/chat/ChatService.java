@@ -31,6 +31,7 @@ public class ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ObjectMapper objectMapper;
 
     @Value("${gemini.api-key}")
     private String apiKey;
@@ -46,28 +47,31 @@ public class ChatService {
         // Gemini에 첫 질문
         String rawResponse = askToGeminiWithImage(imageFile);
 
-        // Gemini 응답이 Markdown 코드 블록으로 감싸져 있을 경우 제거
-        String firstResponseJson = rawResponse.trim();
-        if (firstResponseJson.startsWith("```json")) {
-            firstResponseJson = firstResponseJson.substring(7); // "```json\n" 제거
-        }
-        if (firstResponseJson.endsWith("```")) {
-            firstResponseJson = firstResponseJson.substring(0, firstResponseJson.length() - 3);
-        }
-        firstResponseJson = firstResponseJson.trim(); // 혹시 모를 공백 제거
+        // Gemini 응답 가공 (Markdown 코드 블록 제거)
+        String cleanedJsonString = cleanGeminiResponse(rawResponse);
 
-        // Jackson으로 JSON 파싱해서 주제(itemName) 추출
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(firstResponseJson);
+        // 주제(itemName) 추출
+        JsonNode jsonNode = objectMapper.readTree(cleanedJsonString);
         String topic = jsonNode.get("itemName").asText();
 
         // DB에 채팅방 및 첫 메시지 저장
         ChatRoom newChatRoom = chatRoomRepository.save(new ChatRoom(topic));
-        chatMessageRepository.save(new ChatMessage(newChatRoom, "ai", firstResponseJson));
+        chatMessageRepository.save(new ChatMessage(newChatRoom, "ai", cleanedJsonString));
 
-        return new StartChatResponse(newChatRoom.getId(), firstResponseJson);
+        // 최종 응답 객체 생성
+        return new StartChatResponse(newChatRoom.getId(), jsonNode);
     }
-
+    // Gemini 응답 문자열을 정리하는 private 메서드
+    private String cleanGeminiResponse(String rawResponse) {
+        String cleaned = rawResponse.trim();
+        if (cleaned.startsWith("```json")) {
+            cleaned = cleaned.substring(7);
+        }
+        if (cleaned.endsWith("```")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 3);
+        }
+        return cleaned.trim();
+    }
     @Transactional
     public ChatResponse postMessage(Long roomId, PostMessageRequest request) {
         // 채팅방 정보 가져오기
