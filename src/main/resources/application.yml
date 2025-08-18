@@ -9,8 +9,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 5MB   # 개별 파일의 최대 크기를 10MB로 설정
-      max-request-size: 10MB # 한 번의 요청에 포함된 모든 파일의 총 크기를 10MB로 설정
+      max-file-size: 10MB   # 개별 파일의 최대 크기를 10MB로 설정
+      max-request-size: 20MB # 한 번의 요청에 포함된 모든 파일의 총 크기를 10MB로 설정
 
   jpa:
     hibernate:
