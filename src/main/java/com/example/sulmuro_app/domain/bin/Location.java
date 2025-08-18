@@ -1,4 +1,4 @@
-package com.example.sulmuro_app.domain.place.bin;
+package com.example.sulmuro_app.domain.bin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

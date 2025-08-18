@@ -1,13 +1,12 @@
 package com.example.sulmuro_app.dto.place.response;
 
 import com.example.sulmuro_app.domain.place.Place;
-import com.example.sulmuro_app.domain.place.bin.Location;
-import com.example.sulmuro_app.domain.place.bin.PlaceCategory;
-import com.example.sulmuro_app.dto.image.place.response.PlaceImageResponse;
+import com.example.sulmuro_app.domain.bin.Location;
+import com.example.sulmuro_app.domain.bin.PlaceCategory;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 @Getter
 public class PlaceDetailResponse {
     private Long id;
