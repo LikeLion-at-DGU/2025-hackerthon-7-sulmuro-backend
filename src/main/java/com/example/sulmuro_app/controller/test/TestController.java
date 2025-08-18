@@ -21,7 +21,7 @@ public class TestController {
 
     @GetMapping("/")
     public String home() {
-        return "술무로 서버가 CI/CD를 포함하여 정상적으로 실행중입니다.";
+        return "술무로 서버가 CI/CD를 포함하여 정상적으로 실행중입니다!";
     }
 
     @GetMapping("/test/image/{id}")
