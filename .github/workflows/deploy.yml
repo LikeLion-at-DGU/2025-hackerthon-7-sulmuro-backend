@@ -1,0 +1,30 @@
+name: Sulmuro-BE CI/CD
+
+# main 브랜치에 push 이벤트가 발생했을 때 이 워크플로우를 실행
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    # 워크플로우를 실행할 가상 머신의 OS 지정
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. EC2에 접속하여 배포 스크립트 실행
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # Secrets에 등록한 환경변수들을 EC2 서버에 export
+            export GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            export DB_URL=${{ secrets.DB_URL }}
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            
+            # 프로젝트 폴더로 이동 후 배포 스크립트 실행
+            cd ~/2025-hackerthon-7-sulmuro-backend
+            ./deploy.sh
