@@ -19,11 +19,12 @@ jobs:
             # 1. 프로젝트 폴더로 이동
             cd ~/2025-hackerthon-7-sulmuro-backend
             
-            # 2. 환경 변수로 .env 파일 생성 (가장 중요!)
-            echo "DB_URL=${{ secrets.DB_URL }}" > .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+            # 2. 외부 설정 파일(application-prod.properties) 생성
+            # application.yml의 설정 키 이름을 그대로 사용합니다.
+            echo "spring.datasource.url=${{ secrets.DB_URL }}" > application-prod.properties
+            echo "spring.datasource.username=${{ secrets.DB_USERNAME }}" >> application-prod.properties
+            echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> application-prod.properties
+            echo "gemini.api-key=${{ secrets.GEMINI_API_KEY }}" >> application-prod.properties
             
             # 3. 배포 스크립트 실행
             ./deploy.sh
