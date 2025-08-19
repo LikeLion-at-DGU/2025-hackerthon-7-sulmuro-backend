@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +29,8 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ObjectMapper objectMapper;
     private final GeminiService geminiService;
-
+    private final MarketInfoService marketInfoService; // MarketInfoService 주입
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class); // Logger 객체 추가
 
     @Transactional
     public StartChatResponse startChat(MultipartFile imageFile) throws IOException {
@@ -35,45 +38,47 @@ public class ChatService {
             throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
         }
 
-        // Gemini에 첫 질문
-        String rawResponse = geminiService.askToGeminiWithImage(imageFile);
+        // 1. 1차 이미지 분석으로 itemName만 추출
+        String itemName = geminiService.extractItemNameFromImage(imageFile);
 
-        // Gemini 응답 가공 (Markdown 코드 블록 제거)
-        String cleanedJsonString = cleanGeminiResponse(rawResponse);
+        // 2. 추출된 itemName으로 DB에서 관련 가게 정보 조회
+        String marketInfo = marketInfoService.findMarketInfoByItemName(itemName);
 
-        // 주제(itemName) 추출
+        // 3. 이미지와 DB 정보를 모두 활용하여 최종 답변 생성
+        String finalResponse = geminiService.askToGeminiWithImageAndContext(imageFile, marketInfo);
+
+        // Gemini 응답 가공 및 저장
+        String cleanedJsonString = cleanGeminiResponse(finalResponse);
+
+        // ⭐️⭐️⭐️ [해결 방법] 어떤 응답이 왔는지 여기서 로그로 확인! ⭐️⭐️⭐️
+        log.info("Gemini 최종 응답 (파싱 전): {}", cleanedJsonString);
+
         JsonNode jsonNode = parseJson(cleanedJsonString);
         String topic = jsonNode.get("itemName").asText();
 
-        // DB에 채팅방 및 첫 메시지 저장
         ChatRoom newChatRoom = chatRoomRepository.save(new ChatRoom(topic));
         chatMessageRepository.save(new ChatMessage(newChatRoom, "ai", cleanedJsonString));
 
-        // 최종 응답 객체 생성
         return new StartChatResponse(newChatRoom.getId(), jsonNode);
     }
-
     @Transactional
     public ChatResponse postMessage(Long roomId, PostMessageRequest request) {
-        // 채팅방 정보 가져오기
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
 
-        // 사용자 메시지 저장
         chatMessageRepository.save(new ChatMessage(chatRoom, "user", request.getMessage()));
 
+        // DB에서 채팅 주제와 관련된 가게 정보를 조회
+        String marketInfo = marketInfoService.findMarketInfoByItemName(chatRoom.getTopic());
 
-        // Gemini에 후속 질문 (GeminiService에 위임)
-        String aiResponse = geminiService.askToGeminiWithMessage(chatRoom.getTopic(), request.getMessage());
+        // 조회된 정보와 함께 Gemini에 질문
+        String aiResponse = geminiService.askToGeminiWithMessage(chatRoom.getTopic(), request.getMessage(), marketInfo);
 
-        // AI 응답 저장
         chatMessageRepository.save(new ChatMessage(chatRoom, "ai", aiResponse));
 
         return new ChatResponse(aiResponse);
     }
-    /**
-     * Gemini 응답에서 Markdown 코드 블록을 제거합니다.
-     */
+
     private String cleanGeminiResponse(String rawResponse) {
         String cleaned = rawResponse.trim();
         if (cleaned.startsWith("```json")) {
@@ -85,14 +90,10 @@ public class ChatService {
         return cleaned.trim();
     }
 
-    /**
-     * JSON 문자열을 JsonNode 객체로 파싱합니다.
-     */
     private JsonNode parseJson(String jsonString) {
         try {
             return objectMapper.readTree(jsonString);
         } catch (JsonProcessingException e) {
-            // 실제 프로덕션 코드에서는 로깅을 하고, 커스텀 예외를 던지는 것이 좋습니다.
             throw new RuntimeException("JSON 파싱에 실패했습니다.", e);
         }
     }
