@@ -1,10 +1,9 @@
 package com.example.sulmuro_app.dto.place.request;
 
-import com.example.sulmuro_app.domain.place.bin.Location;
-import com.example.sulmuro_app.domain.place.bin.PlaceCategory;
+import com.example.sulmuro_app.domain.bin.Location;
+import com.example.sulmuro_app.domain.bin.PlaceCategory;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class PlaceCreateRequest {
 
