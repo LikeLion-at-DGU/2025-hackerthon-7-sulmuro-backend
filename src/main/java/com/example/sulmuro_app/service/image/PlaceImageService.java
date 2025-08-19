@@ -70,7 +70,7 @@ public class PlaceImageService {
     /** 특정 장소 이미지 목록 */
     @Transactional(readOnly = true)
     public List<PlaceImageResponse> list(Long placeId) {
-        Place place = placeRepository.findById(placeId).orElseThrow(() -> new NoSuchElementException("place not found"));
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new NoSuchElementException("장소를 찾을 수 없습니다."));
         Long coverId = place.getImage_id();
         return placeImageRepository.findByPlace_PlaceIdOrderByCreatedAtDesc(placeId)
                 .stream()

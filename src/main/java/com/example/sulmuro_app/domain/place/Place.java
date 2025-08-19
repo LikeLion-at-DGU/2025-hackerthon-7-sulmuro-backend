@@ -1,14 +1,13 @@
 package com.example.sulmuro_app.domain.place;
 
-import com.example.sulmuro_app.domain.place.bin.Location;
-import com.example.sulmuro_app.domain.place.bin.PlaceCategory;
+import com.example.sulmuro_app.domain.bin.Location;
+import com.example.sulmuro_app.domain.bin.PlaceCategory;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Place")
 public class Place {
 
     @Id
