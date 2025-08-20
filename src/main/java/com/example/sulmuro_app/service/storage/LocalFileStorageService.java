@@ -1,6 +1,6 @@
 package com.example.sulmuro_app.service.storage;
 
-import org.springframework.beans.factory.annotation.Value;   // ✅ 스프링 @Value 로 변경!
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
