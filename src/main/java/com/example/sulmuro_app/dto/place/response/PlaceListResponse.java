@@ -12,6 +12,7 @@ public class PlaceListResponse {
     private PlaceCategory category;
     private BigDecimal lat;
     private BigDecimal lng;
+    private String address;
     @com.fasterxml.jackson.annotation.JsonProperty("cover_image")
     private String coverImage;
 
@@ -21,6 +22,7 @@ public class PlaceListResponse {
         this.category = p.getCategory();
         this.lat = p.getLat();
         this.lng = p.getLng();
+        this.address = p.getAddress();
         this.coverImage = coverImage;
     }
 
