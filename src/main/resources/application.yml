@@ -10,7 +10,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB   # 개별 파일의 최대 크기를 10MB로 설정
-      max-request-size: 20MB # 한 번의 요청에 포함된 모든 파일의 총 크기를 10MB로 설정
+      max-request-size: 20MB # 한 번의 요청에 포함된 모든 파일의 총 크기를 20MB로 설정
 
   jpa:
     hibernate:
@@ -43,11 +43,11 @@ spring:
     password: ${DB_LOCAL_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
   servlet:
     multipart:
-      max-file-size: 20MB
-      max-request-size: 50MB
+      max-file-size: 10MB
+      max-request-size: 20MB
 
 server:
   port: 8080
@@ -78,3 +78,11 @@ spring:
       hibernate:
         show_sql: false
         format_sql: false
+#
+#server:
+#  forward-headers-strategy: framework   # 리버스 프록시 헤더 신뢰
+#
+#app:
+#  upload:
+#    root: /var/www/uploads                    # 서버 실제 저장 경로
+#    public-base-url: https://movingun.store/uploads
