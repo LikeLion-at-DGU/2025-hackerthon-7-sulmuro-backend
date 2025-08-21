@@ -9,11 +9,11 @@ import com.example.sulmuro_app.dto.place.response.PlaceDetailResponse;
 import com.example.sulmuro_app.dto.place.response.PlaceListResponse;
 import com.example.sulmuro_app.exception.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,18 +29,16 @@ public class PlaceService {
     @Transactional(readOnly = true)
     public List<PlaceListResponse> findList() {
         // 정렬은 필요에 맞게
-        List<Place> places = placeRepository.findAll(
-                org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt")
-        );
+        List<Place> places = placeRepository.findAll(Sort.by(Sort.Direction.ASC, "createdAt"));
 
         // 1) cover image_id 수집
-        java.util.Set<Long> coverIds = places.stream()
+        Set<Long> coverIds = places.stream()
                 .map(Place::getImage_id)
-                .filter(java.util.Objects::nonNull)
-                .collect(java.util.stream.Collectors.toSet());
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
         // 2) 한 번에 조회해서 id→url 맵
-        java.util.Map<Long, String> urlById;
+        Map<Long, String> urlById;
         if (!coverIds.isEmpty()) {
             var images = placeImageRepository.findAllById(coverIds);
             urlById = new java.util.HashMap<>();
@@ -48,13 +46,13 @@ public class PlaceService {
                 urlById.put(img.getImageId(), img.getUrl());
             }
         } else {
-            urlById = java.util.Collections.emptyMap();
+            urlById = Collections.emptyMap();
         }
 
         // 3) DTO 매핑
         return places.stream()
                 .map(p -> new PlaceListResponse(p, urlById.get(p.getImage_id())))
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
