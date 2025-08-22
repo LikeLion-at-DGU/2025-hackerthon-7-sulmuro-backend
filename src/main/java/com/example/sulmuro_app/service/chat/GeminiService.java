@@ -125,4 +125,59 @@ public class GeminiService {
         log.info("Gemini 텍스트 답변 수신: {}", response.text());
         return response.text();
     }
+    /**
+     * 블로그 본문 텍스트에서 가게와 메뉴 정보를 추출하여 JSON 형태로 반환합니다. (정확도 개선 버전)
+     */
+    public String extractMarketInfoFromText(String blogContent) {
+        String textPrompt = String.format("""
+            당신은 텍스트에서 광장시장의 맛집 정보를 추출하는 매우 꼼꼼한 데이터 분석가입니다.
+            주어진 블로그 본문에서 다음 규칙을 **가장 엄격하게** 준수하여 가게와 메뉴 정보를 JSON 배열 형태로 추출해주세요.
+
+            # 블로그 본문
+            %s
+
+            # 규칙 (매우 중요)
+            1.  `storeName`은 **반드시 실제 가게의 상호(고유 명사)**여야 합니다.
+                - **좋은 예:** "순희네 빈대떡", "원조누드치즈김밥", "광장시장 찹쌀꽈배기", "박가네"
+                - **나쁜 예 (절대 포함 금지):** "빈대떡", "김밥", "꽈배기", "육회"와 같은 단순 음식 이름(일반 명사)은 가게 이름이 될 수 없습니다.
+            2.  만약 본문에서 "순희네 빈대떡"이라는 가게가 언급되었다면, `storeName`은 **"순희네 빈대떡"** 이 되어야 하며, 절대 "빈대떡"이 되어서는 안 됩니다.
+            3.  메뉴는 `menus` 배열 안에 `name` (메뉴 이름)과 `price` (가격)으로 구성됩니다. 가격 정보가 없으면 price는 `null`로 설정하세요.
+            4.  본문에 언급된 **실제 가게만**을 대상으로, 최대한 많은 정보를 정확하게 추출해주세요. 없는 정보는 절대 지어내지 마세요.
+            5.  응답은 다른 설명 없이, 아래 예시와 같은 순수 JSON 배열 형식이어야 합니다.
+
+            # 응답 예시
+            [
+              {
+                "storeName": "순희네 빈대떡",
+                "menus": [
+                  { "name": "빈대떡", "price": 5000 },
+                  { "name": "고기완자", "price": 3000 }
+                ]
+              },
+              {
+                "storeName": "광장시장 찹쌀꽈배기",
+                "menus": [
+                  { "name": "찹쌀꽈배기", "price": 1000 },
+                  { "name": "팥도너츠", "price": null }
+                ]
+              }
+            ]
+            """, blogContent);
+
+        Client client = Client.builder().apiKey(apiKey).build();
+        Content input = Content.builder().role("user").parts(Part.fromText(textPrompt)).build();
+        GenerateContentResponse response = client.models.generateContent(modelName, List.of(input), null);
+        log.info("Gemini 텍스트 기반 정보 추출 수신 (정확도 개선)");
+
+        // JSON 응답 클리닝 로직
+        String cleaned = response.text().trim();
+        if (cleaned.startsWith("```json")) {
+            cleaned = cleaned.substring(7);
+        }
+        if (cleaned.endsWith("```")) {
+            cleaned = cleaned.substring(0, cleaned.length() - 3);
+        }
+        return cleaned.trim();
+    }
+
 }
