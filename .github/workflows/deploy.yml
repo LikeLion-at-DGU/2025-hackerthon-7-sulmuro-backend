@@ -25,6 +25,7 @@ jobs:
             echo "spring.datasource.username=${{ secrets.DB_USERNAME }}" >> application-prod.properties
             echo "spring.datasource.password=${{ secrets.DB_PASSWORD }}" >> application-prod.properties
             echo "gemini.api-key=${{ secrets.GEMINI_API_KEY }}" >> application-prod.properties
-            
+            echo "naver.api.client-id=${{ secrets.NAVER_API_CLIENT_ID }}" >> application-prod.properties
+            echo "naver.api.client-secret=${{ secrets.NAVER_API_CLIENT_SECRET }}" >> application-prod.properties
             # 3. 배포 스크립트 실행
             ./deploy.sh
