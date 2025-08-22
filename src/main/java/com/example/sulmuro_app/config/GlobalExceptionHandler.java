@@ -2,6 +2,7 @@ package com.example.sulmuro_app.config;
 
 import com.example.sulmuro_app.dto.bin.ApiResponse;
 import com.example.sulmuro_app.exception.*;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -40,16 +41,16 @@ public class GlobalExceptionHandler {
         return fe.getField() + ": " + (fe.getDefaultMessage() == null ? "invalid" : fe.getDefaultMessage());
     }
 
-//    // 3) @Validated + Path/Query 파라미터 검증
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException ex) {
-//        String msg = ex.getConstraintViolations().stream()
-//                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
-//                .collect(Collectors.joining(", "));
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(ApiResponse.error(msg, HttpStatus.BAD_REQUEST.value()));
-//    }
+    // 3) @Validated + Path/Query 파라미터 검증
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException ex) {
+        String msg = ex.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.joining(", "));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(msg, HttpStatus.BAD_REQUEST.value()));
+    }
 
     // 4) JSON 파싱 불가 등
     @ExceptionHandler(HttpMessageNotReadableException.class)
