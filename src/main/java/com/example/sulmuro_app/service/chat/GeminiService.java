@@ -1,5 +1,6 @@
 package com.example.sulmuro_app.service.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.genai.Client;
 import com.google.genai.types.Content;
 import com.google.genai.types.GenerateContentResponse;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+
 @Service
 public class GeminiService {
 
@@ -22,6 +24,8 @@ public class GeminiService {
     private String apiKey;
     @Value("${gemini.model-name}")
     private String modelName;
+
+    private final ObjectMapper objectMapper = new ObjectMapper(); // ObjectMapper 주입
 
     /**
      * 1단계: 이미지에서 핵심 아이템 이름만 빠르게 추출합니다.
@@ -189,4 +193,79 @@ public class GeminiService {
         return cleaned.trim();
     }
 
+
+    /**
+     * 단순 텍스트 번역을 요청합니다.
+     */
+    public String translateText(String sourceLang, String targetLang, String text) {
+        String prompt = String.format(
+                "당신은 전문 번역가입니다. 다음 텍스트를 '%s'(으)로부터 '%s'(으)로 번역해주세요. 다른 설명 없이 번역된 문장만 알려주세요.\n\ntext: \"%s\"",
+                sourceLang, targetLang, text
+        );
+
+        Client client = Client.builder().apiKey(apiKey).build();
+        Content input = Content.builder().role("user").parts(Part.fromText(prompt)).build();
+        GenerateContentResponse response = client.models.generateContent(modelName, List.of(input), null);
+
+        log.info("Gemini 번역 수신: {}", response.text());
+        return response.text().trim();
+    }
+
+    /**
+     * 번역과 함께 추천 표현 2개를 JSON 형식으로 요청합니다.
+     */
+    public String translateTextWithRecommendations(String sourceLang, String targetLang, String text) {
+
+        String prompt = String.format("""
+            # 역할
+            당신은 한국의 전통 시장, 특히 광장 시장의 베테랑 상인 번역전문가입니다. 당신의 임무는 외국인 관광객이 시장에서 원활하게 소통할 수 있도록 돕는 것입니다. 친절하고 실용적인 표현을 알려주세요.
+
+            # 임무
+            1.  아래의 '# 사용자 문장'을 '%s'에서 '%s'(으)로 자연스럽게 번역합니다.
+            2.  실제 시장 상황에서 유용한 **추천 표현 2개**를 제안합니다. 각 추천 표현은 반드시 원본 언어('%s')와 번역된 언어('%s')를 모두 포함해야 합니다.
+                - **추천 표현 조건 (매우 중요):**
+                    - 원래 문장의 의도와 같거나, 그 상황에서 추가로 물어보면 좋은 질문이어야 합니다.
+                    - 원래 문장의 의도에서 벗어나면 안됩니다!
+                    - 한국어(ko)로 번역할때는 더 정겹거나, 흥정을 유도하거나, 상인과 상호작용할 수 있는 표현을 우선적으로 제안해주세요.
+            3.  결과는 반드시 아래 '# 출력 형식'과 동일한 JSON 객체로만 반환해야 합니다. 다른 설명은 절대 추가하지 마세요.
+
+            # 사용자 문장
+            "%s"
+
+            # 출력 형식
+            {
+              "translatedText": "번역된 문장",
+              "recommendations": [
+                {
+                  "source": "추천 표현 1의 원본 언어('%s') 문장",
+                  "target": "추천 표현 1의 번역된 언어('%s') 문장"
+                },
+                {
+                  "source": "추천 표현 2의 원본 언어('%s') 문장",
+                  "target": "추천 표현 2의 번역된 언어('%s') 문장"
+                }
+              ]
+            }
+            """, sourceLang, targetLang, sourceLang, targetLang, text, sourceLang, targetLang, sourceLang, targetLang);
+
+        Client client = Client.builder().apiKey(apiKey).build();
+        Content input = Content.builder().role("user").parts(Part.fromText(prompt)).build();
+        GenerateContentResponse response = client.models.generateContent(modelName, List.of(input), null);
+
+        log.info("Gemini 번역 및 추천 표현 수신: {}", response.text());
+        return cleanGeminiJsonResponse(response.text());
+
+    }
+
+// JSON 응답을 깔끔하게 정리하는 헬퍼 메서드
+private String cleanGeminiJsonResponse(String rawResponse) {
+    String cleaned = rawResponse.trim();
+    if (cleaned.startsWith("```json")) {
+        cleaned = cleaned.substring(7);
+    }
+    if (cleaned.endsWith("```")) {
+        cleaned = cleaned.substring(0, cleaned.length() - 3);
+    }
+    return cleaned.trim();
+}
 }
