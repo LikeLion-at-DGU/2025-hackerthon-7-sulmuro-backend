@@ -2,6 +2,7 @@ package com.example.sulmuro_app.dto.article.block.response;
 
 import com.example.sulmuro_app.domain.article.ArticleBlock;
 import com.example.sulmuro_app.domain.bin.BlockType;
+import com.example.sulmuro_app.i18n.Trans;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ public class BlockResponse {
 
     private Long id;
     private BlockType type;
+    @Trans(src="")
     private String data;
     private Long position;
     private LocalDateTime createdAt;

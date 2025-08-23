@@ -3,16 +3,19 @@ package com.example.sulmuro_app.dto.place.response;
 import com.example.sulmuro_app.domain.bin.Location;
 import com.example.sulmuro_app.domain.place.Place;
 import com.example.sulmuro_app.domain.bin.PlaceCategory;
+import com.example.sulmuro_app.i18n.Trans;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 @Getter
 public class PlaceListResponse {
     private Long id;
+    @Trans(src = "KO")
     private String name;
     private PlaceCategory category;
     private BigDecimal lat;
     private BigDecimal lng;
+    @Trans(src = "KO")
     private String address;
     private Location location;
     @com.fasterxml.jackson.annotation.JsonProperty("cover_image")
