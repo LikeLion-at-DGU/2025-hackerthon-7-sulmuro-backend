@@ -10,7 +10,7 @@ public enum PlaceCategory {
     FOOD("Food"),
     CLOTH("Clothes"),
     GOODS("Goods"),
-    CAFE("cafe"),
+    CAFE("Cafe"),
     BAR("Bar");
 
     private final String displayName;
