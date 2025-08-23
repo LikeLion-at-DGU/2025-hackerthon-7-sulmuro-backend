@@ -18,6 +18,8 @@ public class ArticleListItemResponse {
     private Theme theme;
     private LocalDateTime createdAt;
     private Location location;
+    private List<String> imageUrls; // type=IMAGE 중 최대 5개
+
 
     public static ArticleListItemResponse of(Article a) {
         ArticleListItemResponse r = new ArticleListItemResponse();
@@ -27,6 +29,8 @@ public class ArticleListItemResponse {
         r.theme = a.getTheme();
         r.createdAt = a.getCreatedAt();
         r.location = a.getLocation();
+        r.imageUrls = a.getImageUrls(); // 엔티티의 조회용 메서드 사용
+
         return r;
     }
 
@@ -37,4 +41,6 @@ public class ArticleListItemResponse {
     public Theme getTheme() { return theme; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public Location getLocation() { return location; }
+    public List<String> getImageUrls() { return imageUrls; }
+
 }
