@@ -26,7 +26,7 @@ public class MarketDataSyncController {
     @PostMapping("/market-data")
     public ApiResponse<String> syncMarketData() {
         final int CHUNK_SIZE = 20; // 한 번에 처리할 게시글 수
-        final int TOTAL_COUNT = 100; // 총 가져올 게시글 수
+        final int TOTAL_COUNT = 200; // 총 가져올 게시글 수
 
         log.info("블로그 데이터 동기화를 시작합니다. 총 {}개, {}개씩 처리.", TOTAL_COUNT, CHUNK_SIZE);
 
@@ -36,7 +36,7 @@ public class MarketDataSyncController {
             log.info("... {}번째 청크 처리 (시작 위치: {})", i + 1, start);
 
             // 1. 블로그 데이터 20개씩 크롤링
-            List<String> descriptions = crawlerService.fetchBlogDescriptions("광장시장 맛집 추천", CHUNK_SIZE, start);
+            List<String> descriptions = crawlerService.fetchBlogDescriptions("광장시장", CHUNK_SIZE, start);
 
             if(descriptions.isEmpty()){
                 log.warn("... {}번째 청크에서 가져올 데이터가 없습니다. 중단합니다.", i + 1);
