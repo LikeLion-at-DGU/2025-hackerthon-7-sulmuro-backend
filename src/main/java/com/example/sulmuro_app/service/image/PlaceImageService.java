@@ -5,6 +5,7 @@ import com.example.sulmuro_app.domain.image.PlaceImageRepository;
 import com.example.sulmuro_app.domain.place.Place;
 import com.example.sulmuro_app.domain.place.PlaceRepository;
 import com.example.sulmuro_app.dto.image.place.response.PlaceImageResponse;
+import com.example.sulmuro_app.service.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class PlaceImageService {
 
     private final PlaceRepository placeRepository;
     private final PlaceImageRepository placeImageRepository;
+    private final FileStorageService storage;
+
 
     @Value("${app.upload.root:${user.home}/uploads}")
     private String uploadRoot;
@@ -46,7 +49,7 @@ public class PlaceImageService {
                 throw new IllegalArgumentException("only image files are allowed");
             }
 
-            String url = saveToLocal(placeId, f);
+            String url = storage.upload(f, "places/" + placeId);   // ← 폴더 분리 + 절대URL
             String filename = Optional.ofNullable(f.getOriginalFilename()).filter(s -> !s.isBlank()).orElse("image");
 
             PlaceImage img = new PlaceImage();
