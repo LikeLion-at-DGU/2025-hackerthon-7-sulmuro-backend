@@ -3,6 +3,7 @@ package com.example.sulmuro_app.dto.article.response;
 import com.example.sulmuro_app.domain.article.Article;
 import com.example.sulmuro_app.domain.bin.Location;
 import com.example.sulmuro_app.domain.bin.Theme;
+import com.example.sulmuro_app.i18n.Trans;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 public class ArticleResponse {
 
     private Long id;
+    @Trans(src="KO")
     private String title;
+    @Trans(src="KO")
     private String subTitle;
     private Theme theme;
     private LocalDateTime createdAt;

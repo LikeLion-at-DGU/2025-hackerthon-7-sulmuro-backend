@@ -3,6 +3,7 @@ package com.example.sulmuro_app.dto.place.response;
 import com.example.sulmuro_app.domain.place.Place;
 import com.example.sulmuro_app.domain.bin.Location;
 import com.example.sulmuro_app.domain.bin.PlaceCategory;
+import com.example.sulmuro_app.i18n.Trans;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -10,9 +11,12 @@ import java.math.BigDecimal;
 @Getter
 public class PlaceDetailResponse {
     private Long id;
+    @Trans(src = "KO")
     private String name;
     private PlaceCategory category;
+    @Trans(src = "KO")
     private String content;
+    @Trans(src = "KO")
     private String address;
     private Location location;
     private BigDecimal lat;
