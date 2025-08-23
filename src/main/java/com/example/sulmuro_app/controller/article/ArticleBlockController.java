@@ -27,7 +27,7 @@ public class ArticleBlockController {
             MediaType.APPLICATION_FORM_URLENCODED_VALUE })
     public ApiResponse<BlockResponse> addMultipart(
             @PathVariable Long articleId,
-            @RequestParam("type") String typeStr,          // 🔸 문자열로 받기
+            @RequestParam("type") String typeStr,
             @RequestParam("position") Long position,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "data", required = false) String data

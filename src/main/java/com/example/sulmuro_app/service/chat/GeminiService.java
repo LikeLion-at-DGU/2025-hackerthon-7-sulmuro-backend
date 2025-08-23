@@ -115,7 +115,7 @@ public class GeminiService {
 
             위 가게 정보를 최우선으로 참고하여 친절하고 상세하게 한국어로 답변해주세요.
             만약 위 정보에 가격이 있다면, 그 가격을 기준으로 답변해주세요.
-            답변은 plaintext로 150자 내외로 해주세요.
+            # 중요규칙 답변은 plaintext로 150자 내외로 해주세요.
             질문: %s
             """, topic, marketInfoContext, message);
 
