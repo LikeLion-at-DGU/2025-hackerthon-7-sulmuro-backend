@@ -102,11 +102,8 @@ spring:
       hibernate:
         show_sql: false
         format_sql: false
-#
-#server:
-#  forward-headers-strategy: framework   # 리버스 프록시 헤더 신뢰
-#
 app:
   upload:
     root: /home/ubuntu/uploads
     public-base-url: https://movingun.store/uploads
+
