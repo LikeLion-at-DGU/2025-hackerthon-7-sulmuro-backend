@@ -53,7 +53,7 @@ public class GeminiService {
                 %s
 
                 # 규칙 (매우 중요)
-                1.  먼저, 이미지를 분석하여 `itemName`과 `description`을 작성합니다.
+                1.  먼저, 이미지를 분석하여 `itemName`과 `description`을 작성합니다. `description`은 200자 이상 400자 이하로 답변해주세요
                 2.  다음으로, `itemName`이 "광장시장"과 관련이 있는지 판단합니다. (예: 빈대떡, 마약김밥, 육회 등 음식, 한복 등)
                     - **CASE 1: `itemName`이 광장시장과 관련 있고, "# 제공된 실제 광장시장 가게 정보"에 해당 가게가 있는 경우:**
                         - `isGwangjangItem`을 `true`로 설정합니다.
@@ -107,17 +107,26 @@ public class GeminiService {
      */
     public String askToGeminiWithMessage(String topic, String message, String marketInfoContext) {
         String textPrompt = String.format("""
-            당신은 광장시장 전문 음식 큐레이터입니다.
-            '%s'와 '광장시장'이라는 주제와 관련해서 아래 질문에 대해 답변해주세요.
+        당신은 광장시장의 모든 정보를 담고 있는 챗봇입니다. 당신이 가장먼저 참고할 정보는 '# 제공된 실제 광장시장 정보'입니다.
 
-            # 참고할 실제 광장시장 가게 정보
-            %s
+        # 제공된 실제 광장시장 정보
+        %s
 
-            위 가게 정보를 최우선으로 참고하여 친절하고 상세하게 한국어로 답변해주세요.
-            만약 위 정보에 가격이 있다면, 그 가격을 기준으로 답변해주세요.
-            # 중요규칙 답변은 plaintext로 150자 내외로 해주세요.
-            질문: %s
-            """, topic, marketInfoContext, message);
+        # 대화의 시작 주제
+        - %s
+
+        # 당신의 임무 (매우 중요)
+        사용자의 '# 마지막 질문'에 답변해야 합니다. 답변은 '# 제공된 실제 광장시장 정보'를 최우선으로 해야 합니다.
+
+        # 답변 규칙
+        1.  사용자가 질문한 가게나 메뉴가 '# 제공된 실제 광장시장 정보'에 있는지 확인합니다.
+        2.  만약 정보가 있다면, 그 정보를 사용하여 질문에 답변합니다.
+        3.  만약 정보가 없다면, 다른 말을 하지 말고 **정확히 "죄송하지만, 요청하신 내용에 대한 정보는 찾을 수 없습니다."** 라고만 답변해야 합니다. 절대로 정보를 추측하거나 지어내지 마세요.
+        4.  (매우 중요) 모든 답변은 150자 이내의 한국어 평문(plaintext)으로 작성하세요.
+
+        # 마지막 질문
+        %s
+        """, marketInfoContext, topic, message);
 
         Client client = Client.builder().apiKey(apiKey).build();
         Content input = Content.builder().role("user").parts(Part.fromText(textPrompt)).build();
