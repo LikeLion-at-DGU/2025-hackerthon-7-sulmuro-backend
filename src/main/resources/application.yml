@@ -37,6 +37,17 @@ naver:
     client-id: ${NAVER_API_CLIENT_ID}    # 여기에 발급받은 Client ID를 넣을 환경 변수 이름
     client-secret: ${NAVER_API_CLIENT_SECRET} # 여기에 발급받은 Client Secret을 넣을 환경 변수 이름
 
+
+# ==================================================================
+# DeppL API 설정
+# ==================================================================
+
+deepl:
+  # free: https://api-free.deepl.com , pro: https://api.deepl.com
+  baseUrl: https://api-free.deepl.com
+  authKey: ${DEEPL_AUTH_KEY}  # 터미널/서버 환경변수로 주입
+  formality: default          # default|more|less (ko/ja/zh는 무시됨)
+
 # ==================================================================
 # local (개발) 환경 전용 설정
 # ==================================================================
@@ -61,9 +72,14 @@ server:
   port: 8080
 
 app:
+  i18n:
+    cacheTtlMinutes: 60     # 캐시 TTL
+    saveToDb: false         # DB에 저장까지 하고 싶으면 true (옵션)
+
   upload:
     root: ${user.home}/uploads
     public-base-url: http://localhost:8080/uploads
+
 
 
 
@@ -90,7 +106,7 @@ spring:
 #server:
 #  forward-headers-strategy: framework   # 리버스 프록시 헤더 신뢰
 #
-#app:
-#  upload:
-#    root: /var/www/uploads                    # 서버 실제 저장 경로
-#    public-base-url: https://movingun.store/uploads
+app:
+  upload:
+    root: /home/ubuntu/uploads
+    public-base-url: https://movingun.store/uploads
