@@ -33,7 +33,6 @@ public class TranslateService {
 
     // 2. 번역 + 추천 표현 API
 
-    // [수정된 부분]
     public TranslateRecommendResponse translateWithRecommend(TranslateRequest request) {
         String jsonResponse = geminiService.translateTextWithRecommendations(
                 request.getSourceLanguageCode(),

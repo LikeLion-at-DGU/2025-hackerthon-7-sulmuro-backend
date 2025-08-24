@@ -10,8 +10,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-//import jakarta.validation.ConstraintViolationException;
-
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -72,7 +70,6 @@ public class GlobalExceptionHandler {
     // 6) 그 외 모든 예외(Fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
-        // TODO: 로깅 시스템 연동 시 여기서 로그 남기기
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error(ApiErrorCode.INTERNAL_ERROR.getDefaultMessage(),

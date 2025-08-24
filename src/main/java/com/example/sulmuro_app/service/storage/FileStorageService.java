@@ -20,7 +20,6 @@ public class FileStorageService {
     @Value("${app.upload.public-base-url:http://localhost:8080/uploads}")
     private String publicBaseUrl;
 
-    /** dir: "places/16" 또는 "articles/23" */
     public String upload(MultipartFile file, String dir) {
         try {
             String safeDir = dir.replace("..", "").replace("\\", "/");

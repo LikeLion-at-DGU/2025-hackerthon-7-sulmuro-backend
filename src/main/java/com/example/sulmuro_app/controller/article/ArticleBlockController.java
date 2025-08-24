@@ -1,12 +1,9 @@
 package com.example.sulmuro_app.controller.article;
 
-import com.example.sulmuro_app.domain.bin.BlockType;
-import com.example.sulmuro_app.dto.article.block.request.BlockCreateRequest;
-import com.example.sulmuro_app.dto.article.block.response.BlockResponse;
+import com.example.sulmuro_app.dto.article.request.BlockCreateRequest;
+import com.example.sulmuro_app.dto.article.response.BlockResponse;
 import com.example.sulmuro_app.dto.bin.ApiResponse;
 import com.example.sulmuro_app.service.article.ArticleBlockService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

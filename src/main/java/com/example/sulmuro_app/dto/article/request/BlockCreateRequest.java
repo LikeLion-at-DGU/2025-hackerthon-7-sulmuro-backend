@@ -1,4 +1,4 @@
-package com.example.sulmuro_app.dto.article.block.request;
+package com.example.sulmuro_app.dto.article.request;
 
 import com.example.sulmuro_app.domain.bin.BlockType;
 import jakarta.validation.constraints.NotBlank;
