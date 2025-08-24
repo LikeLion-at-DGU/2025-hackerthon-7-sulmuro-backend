@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import java.util.ArrayList; // 추가
+import java.util.List; // 추가
 @Getter
 @Entity
 @Table(name = "crawler_store") // 실제 테이블 이름 명시
@@ -23,6 +24,9 @@ public class CrawlerStore {
     private String notes;
 
     private String locationDesc;
+
+    @OneToMany(mappedBy = "store", fetch = FetchType.LAZY)
+    private List<CrawlerMenuItem> menuItems = new ArrayList<>();
 
     public CrawlerStore(String name, String notes, String locationDesc) {
         this.name = name;

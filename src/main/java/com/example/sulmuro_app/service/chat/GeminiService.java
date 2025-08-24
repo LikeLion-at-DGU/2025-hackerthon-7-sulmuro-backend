@@ -49,50 +49,70 @@ public class GeminiService {
     /**
      * 2단계: 이미지와 DB 컨텍스트를 모두 사용하여 최종 답변을 생성
      */
-    public String askToGeminiWithImageAndContext(MultipartFile imageFile, String marketInfoContext) throws IOException {
+    public String askToGeminiWithImageAndContext(MultipartFile imageFile, String marketInfoContext, String language) throws IOException {
+        String targetLanguage = getLanguageFullName(language);
+        String priceFormattingInstruction;
+        String storeFormattingInstruction;
+
+        if ("Korean".equals(targetLanguage)) {
+            priceFormattingInstruction = """
+                    - `averagePrice`에 제공된 가게 정보의 가격들을 바탕으로 **"최소가격원 ~ 최대가격원" 형식의 시세**를 계산하여 문자열로 넣어주세요. 만약 제공된 정보에 가격이 없다면 **"NULL"**으로 설정합니다.
+        """;
+            storeFormattingInstruction = """
+                    - `recommendedStores`에 **관련 메뉴를 판매하는 바로 그 가게들의 이름**을 정확히 채워주세요. (최대 3개)
+        """;
+        } else {
+            priceFormattingInstruction = """
+                    - For `averagePrice`, calculate the price range from the provided store information and format it as a string 'MIN_PRICEwon ~ MAX_PRICEwon' (e.g., 5000won). If no price information is available, set it to 'NULL'.
+        """;
+            storeFormattingInstruction = """
+                    - For `recommendedStores`, list the names of the relevant stores. The name **must be in the format: 'Romanized Korean Name (Original Korean Name)'**. For example: 'Sunhuine Bindaetteok (순희네 빈대떡)'.
+        """;
+        }
+
         String textPrompt = String.format("""
-                당신은 광장시장의 모든 것을 아는 전문 큐레이터입니다. 주어진 이미지와 가게 정보를 바탕으로 다음 규칙을 엄격하게 준수하여 JSON 응답을 생성해주세요.
+        # 역할
+        당신은 광장시장의 전문 큐레이터입니다. 주어진 이미지와 가게 정보를 바탕으로, 아래 규칙을 엄격하게 준수하여 JSON 응답을 생성해주세요. 최종 JSON 응답의 모든 텍스트는 반드시 %s(으)로 작성되어야 합니다.
 
-                # 제공된 실제 광장시장 가게 정보
-                %s
+        # 제공된 광장시장 가게 정보
+        %s
 
-                # 규칙 (매우 중요)
-                1.  먼저, 이미지를 분석하여 `itemName`과 `description`을 작성합니다. `description`은 150자 이상 300자 이하로 답변해주세요
-                2.  다음으로, `itemName`이 "광장시장"과 관련이 있는지 판단합니다. (예: 빈대떡, 마약김밥, 육회 등 음식, 한복 등)
-                    - **CASE 1: `itemName`(예: 커피)과 관련된 메뉴(예: 아메리카노, 라떼)를 "# 제공된 실제 광장시장 가게 정보"에서 찾을 수 있는 경우:**
-                        - `isGwangjangItem`을 `true`로 설정합니다.
-                        - `averagePrice`에 제공된 가게 정보의 가격들을 바탕으로 **"최소가격원 ~ 최대가격원" 형식의 시세**를 계산하여 문자열로 넣어주세요. 만약 제공된 정보에 가격이 없다면 **"정보 없음"**으로 설정합니다.
-                         - `recommendedStores`에 **관련 메뉴를 판매하는 바로 그 가게들의 이름**을 정확히 채워주세요. (최대 3개)
-                    - **CASE 2: `itemName`이 광장시장과 관련은 있지만, "# 제공된 실제 광장시장 가게 정보"에 해당 가게가 없는 경우 (정보가 "관련 가게 정보 없음"으로 제공된 경우):**
-                        - `isGwangjangItem`을 `true`로 설정합니다.
-                        - `averagePrice`를 **"정보 없음"**으로 설정합니다.
-                        - `recommendedStores`를 **반드시 빈 배열 `[]`** 로 설정합니다. 절대로 가게 정보를 지어내지 마세요.
-                    - **CASE 3: `itemName`이 광장시장과 전혀 관련이 없는 경우 (예: 자동차, 컴퓨터):**
-                        - `isGwangjangItem`을 `false`로 설정합니다.
-                        - `averagePrice`를 **"정보 없음"**으로 설정합니다.
-                        - `recommendedStores`를 **반드시 빈 배열 `[]`** 로 설정합니다.
-                        - `description`의 마지막에 **"광장시장과는 관련이 없는 사진인것 같습니다."** 라는 문장을 반드시 추가해주세요.
-                3.  마지막으로, `itemName`과 관련된 `recommendedquestion`을 3개 생성합니다.
-                4.  응답은 반드시 아래 예시와 같은 JSON 형식이어야 하며, 다른 설명 없이 JSON 객체만 반환해야 합니다.
+        # 규칙 (매우 중요)
+        1.  먼저, 이미지를 분석하여 `itemName`과 `description`을 작성합니다. `description`은 150자 이상 300자 이하로 작성해주세요.
+        2.  다음으로, `itemName`이 "광장시장"과 관련이 있는지 판단합니다.
+            - **CASE 1: `itemName`과 관련된 메뉴를 "# 제공된 광장시장 가게 정보"에서 찾을 수 있는 경우:**
+                - `isGwangjangItem`을 `true`로 설정합니다.
+%s
+%s
+            - **CASE 2: `itemName`이 광장시장과 관련은 있지만, "# 제공된 광장시장 가게 정보"에 해당하는 가게가 없는 경우:**
+                - `isGwangjangItem`을 `true`로 설정합니다.
+                - `averagePrice`를 "정보 없음"(으)로 설정합니다.
+                - `recommendedStores`는 반드시 빈 배열 `[]`로 설정하세요. 절대로 가게 이름을 지어내지 마세요.
+            - **CASE 3: `itemName`이 광장시장과 전혀 관련이 없는 경우 (예: 자동차, 컴퓨터):**
+                - `isGwangjangItem`을 `false`로 설정합니다.
+                - `averagePrice`를 "정보 없음"(으)로 설정합니다.
+                - `recommendedStores`는 반드시 빈 배열 `[]`로 설정합니다.
+                - `description`의 마지막에 **"이 사진은 광장시장과 관련이 없는 것 같습니다."** 라는 문장을 반드시 추가해주세요.
+        3.  마지막으로, `itemName`과 관련된 `recommendedquestion`을 3개 생성합니다.
+        4.  응답은 다른 설명 없이, 아래 예시와 같은 순수 JSON 객체 형식이어야 합니다.
 
-                # 응답 예시
-                {
-                  "itemName": "빈대떡",
-                  "description": "녹두를 갈아 만든 한국 전통전으로 바삭한 식감과 담백한 맛이 특징입니다.",
-                  "isGwangjangItem": true,
-                  "averagePrice": "5,000원 ~ 6,000원",
-                  "recommendedStores": [
-                     { "name": "순희네 빈대떡" },
-                     { "name": "박가네 빈대떡" }
-                  ],
-                  "recommendedquestion": [
-                    { "question": "같이먹으면 좋은 음식은?" },
-                    { "question": "어떻게 먹는건가요?" },
-                    { "question": "먹을때 주의할점은?" }
-                  ]
-                }
-            """, marketInfoContext);
-
+            # 응답예시
+            {
+              "itemName": "Bindaetteok",
+              "description": "A traditional Korean pancake made from ground mung beans, known for its crispy texture and savory taste.",
+              "isGwangjangItem": true,
+              "averagePrice": "5000won ~ 6000won",
+              "recommendedStores": [
+                 { "name": "Sunhuine Bindaetteok (순희네 빈대떡)" },
+                 { "name": "Parkgane Bindaetteok (박가네 빈대떡)" }
+              ],
+              "recommendedquestion": [
+                { "question": "What food goes well with it?" },
+                { "question": "How should I eat it?" },
+                { "question": "Any precautions when eating?" }
+              ]
+            }
+            """, targetLanguage, marketInfoContext, priceFormattingInstruction, storeFormattingInstruction);
 
         byte[] imageBytes = imageFile.getBytes();
         Client client = Client.builder().apiKey(apiKey).build();
@@ -109,34 +129,55 @@ public class GeminiService {
     /**
      * DB 정보와 함께 텍스트 메시지로 Gemini에 후속 질문을 보냅니다.
      */
-    public String askToGeminiWithMessage(String topic, String message, String marketInfoContext) {
+    public String askToGeminiWithMessage(String topic, String message, String marketInfoContext, String language) {
+        String targetLanguage = getLanguageFullName(language);
+        String unrelatedMessage = switch (targetLanguage.toLowerCase()) {
+            case "english" -> "The content of your question does not seem to be related to Gwangjang Market.";
+            case "chinese" -> "您所提问的内容似乎与广藏市场无关。";
+            default -> "질문하신 내용은 광장시장과는 관련이 없는것 같습니다.";
+        };
         String textPrompt = String.format("""
-        당신은 광장시장의 모든 정보를 담고 있는 챗봇입니다. 당신이 가장먼저 참고할 정보는 '# 제공된 실제 광장시장 정보'입니다.
-
-        # 제공된 실제 광장시장 정보
-        %s
+        # 역할
+        당신은 광장시장에 대해 모든 것을 아는 박식한 AI 가이드입니다. 당신의 임무는 사용자의 질문에 최대한 유용하고 친절하게 답변하는 것입니다.
 
         # 대화의 시작 주제
         - %s
 
-        # 당신의 임무 (매우 중요)
-        사용자의 '# 마지막 질문'에 답변해야 합니다. 답변은 '# 제공된 실제 광장시장 정보'를 최우선으로 해야 합니다.
-
-        # 답변 규칙
-        1.  사용자가 질문한 가게나 메뉴가 '# 제공된 실제 광장시장 정보'에 유사한것이 있는지 확인합니다.
-        2.  만약 정보가 있다면, 그 정보를 최우선으로 활용하여 질문에 답변합니다.
-        3.  만약 정보가 '# 제공된 실제 광장시장 정보'와 유사성이 전혀 없다면, 기본 지식으로 답변을 한뒤 **정확히 "질문하신 내용은 광장시장과는 관련이 없는것 같습니다."** 라고 답변끝에 붙여주세요.
-        4.  (매우 중요) 모든 답변은 150자 이내의 한국어 평문(plaintext)으로 작성하세요.
-
-        # 마지막 질문
+        # 참고자료: 광장시장 전체 가게 DB 정보
+        ```
         %s
-        """, marketInfoContext, topic, message);
+        ```
+
+        # 임무
+        '# 사용자의 마지막 질문'의 의도를 파악하고, '# 참고자료'와 당신의 폭넓은 지식을 모두 활용하여 답변하세요.
+
+        # 답변 규칙 (반드시 지켜주세요)
+        1.  **질문 의도 파악이 최우선**: 사용자의 마지막 질문은 '# 대화의 시작 주제'와 전혀 다른 새로운 내용일 수 있습니다. 이 점을 반드시 인지하고 질문의 핵심 의도에 집중하세요.
+        2.  **답변 생성 로직**:
+            - **CASE 1: 질문이 '# 참고자료'와 관련 있을 때:** '# 참고자료'에 있는 정보를 우선적으로 활용하여 답변을 구성하세요.
+            - **CASE 2: 질문이 '# 참고자료'와 관련 없을 때 (대화 주제가 바뀌었을 때):** '# 참고자료'의 내용에 얽매이지 말고, 당신의 폭넓은 자체 지식을 활용하여 질문에 직접 답변하세요. 광장시장에 대한 정보라면 무엇이든 좋습니다. 예를 들어 사용자가 '카페'를 물어보면, 당신이 아는 광장시장의 카페를 추천해야 합니다.
+        3.  **관련성 판단**: 만약 사용자의 질문이 광장시장과 전혀 관련이 없다고 판단되면, 당신의 판단에 따라 자유롭게 답변하되, 응답의 맨 마지막에 다음 문장을 **반드시 정확하게** 추가해주세요: "%s"
+        4.  **언어 및 길이**: 전체 답변은 반드시 **%s**로 작성해야 하며, 150자를 넘지 않아야 합니다.
+        5.  **형식 주의**: 답변은 꾸밈없는 순수 텍스트(Plain Text)여야 합니다. 절대로 마크다운(`**`, `*` 등)을 사용하지 마세요.
+
+        # 사용자의 마지막 질문
+        %s
+        """, topic, marketInfoContext, unrelatedMessage, targetLanguage, message);
 
         Client client = Client.builder().apiKey(apiKey).build();
         Content input = Content.builder().role("user").parts(Part.fromText(textPrompt)).build();
         GenerateContentResponse response = client.models.generateContent(modelName, List.of(input), null);
         log.info("Gemini 텍스트 답변 수신: {}", response.text());
         return response.text();
+    }
+
+    private String getLanguageFullName(String code) {
+        return switch (code.toLowerCase()) {
+            case "ko" -> "Korean";
+            case "en" -> "English";
+            case "zh" -> "Chinese";
+            default -> "English"; // 기본값
+        };
     }
     /**
      * 블로그 본문 텍스트에서 가게와 메뉴 정보를 추출하여 JSON 형태로 반환합니다. (정확도 개선 버전)
