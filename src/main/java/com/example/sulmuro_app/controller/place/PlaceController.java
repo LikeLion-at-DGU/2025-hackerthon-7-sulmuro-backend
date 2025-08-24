@@ -36,6 +36,7 @@ public class PlaceController {
         List<PlaceSearchResponse> places = placeSearchService.searchByIds(req.getIds());
         return ApiResponse.success("장소 목록을 검색하여 불러왔습니다.",places);
     }
+
     @GetMapping
     public ApiResponse<List<PlaceListResponse>> getAllPlaces() {
         List<PlaceListResponse> places = placeService.findList();
