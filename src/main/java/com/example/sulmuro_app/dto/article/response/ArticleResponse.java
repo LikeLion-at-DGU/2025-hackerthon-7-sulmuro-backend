@@ -32,7 +32,7 @@ public class ArticleResponse {
         return r;
     }
 
-    // getter
+
     public Long getId() { return id; }
     public String getTitle() { return title; }
     public String getSubTitle() { return subTitle; }

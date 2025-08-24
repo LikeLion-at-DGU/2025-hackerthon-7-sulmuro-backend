@@ -35,7 +35,7 @@ public class Place {
     private String address;
 
     @Column
-    private Long image_id; // FK, 관계 매핑은 나중에 가능
+    private Long image_id;
 
     @Column(nullable = false,name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -44,7 +44,6 @@ public class Place {
     @Column(nullable = false)
     private Location location = Location.GWANGJANG_MARKET;
 
-    // ===== 기본 생성자 =====
     protected Place() {}
 
     public Place(String name, String content, PlaceCategory category, BigDecimal lat, BigDecimal lng,String address, Location location) {
@@ -64,7 +63,6 @@ public class Place {
         if (this.createdAt == null) this.createdAt = LocalDateTime.now();
     }
 
-    // ===== Getter / Setter =====
 
 
     public Long getPlace_id() {

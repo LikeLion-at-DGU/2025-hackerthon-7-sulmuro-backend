@@ -5,11 +5,11 @@ import com.example.sulmuro_app.dto.article.request.ArticleSearchRequest;
 import com.example.sulmuro_app.dto.article.response.ArticleListItemResponse;
 import com.example.sulmuro_app.dto.article.response.ArticleResponse;
 import com.example.sulmuro_app.dto.bin.ApiResponse;
+import com.example.sulmuro_app.i18n.TranslateResponse;
 import com.example.sulmuro_app.service.article.ArticleService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +30,7 @@ public class ArticleController {
     }
 
     @PostMapping("/search")
+    @TranslateResponse
     public ApiResponse<List<ArticleResponse>>searchArticles(
             @RequestBody ArticleSearchRequest req
     ) {
@@ -44,7 +45,6 @@ public class ArticleController {
         return  ApiResponse.success("아티클을 불러왔습니다.",  res);
     }
 
-    /** 아티클 목록 조회 (페이지네이션) */
     @GetMapping
     public ApiResponse<Page<ArticleListItemResponse>> list(
             @RequestParam(defaultValue = "0") int page,

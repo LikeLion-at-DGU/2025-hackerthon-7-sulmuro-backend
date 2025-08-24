@@ -59,7 +59,6 @@ public class PlaceSearchService {
                 .map(p -> new PlaceSearchResponse(
                         p.getPlace_id(),
                         p.getName(),
-                        // category 표기: Enum에 display()가 있으면 그것 사용, 없으면 name()으로 대응
                         p.getCategory(),
                         p.getContent(),
                         p.getLat(),

@@ -28,7 +28,6 @@ public class ArticleBlock {
     @Enumerated(EnumType.STRING)
     private BlockType type;
 
-    // ----
     protected ArticleBlock() {}
 
     public ArticleBlock(Article article, String data, Long position, BlockType type) {

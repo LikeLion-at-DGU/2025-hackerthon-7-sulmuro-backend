@@ -18,7 +18,6 @@ public class ArticleCreateRequest {
     @NotNull
     private Location location;
 
-    // getter/setter
     public String getTitle() { return title; }
     public String getSubTitle() { return subTitle; }
     public Theme getTheme() { return theme; }

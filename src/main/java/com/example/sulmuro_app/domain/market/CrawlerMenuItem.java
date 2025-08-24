@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "crawler_menu_item") // 실제 테이블 이름 명시
+@Table(name = "crawler_menu_item")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrawlerMenuItem {
 
