@@ -21,7 +21,6 @@ public class NaverBlogCrawlerService {
     private final String BLOG_SEARCH_URL = "https://openapi.naver.com/v1/search/blog.json";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // start 파라미터를 받도록 메서드 시그니처 수정
     public List<String> fetchBlogDescriptions(String query, int display, int start) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -29,11 +28,9 @@ public class NaverBlogCrawlerService {
         headers.set("X-Naver-Client-Secret", clientSecret);
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        // URL에 start 파라미터를 추가
         String url = BLOG_SEARCH_URL + "?query=" + query + "&display=" + display + "&start=" + start;
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-        // ... (이하 동일) ...
         List<String> descriptions = new ArrayList<>();
         try {
             JsonNode root = objectMapper.readTree(response.getBody());

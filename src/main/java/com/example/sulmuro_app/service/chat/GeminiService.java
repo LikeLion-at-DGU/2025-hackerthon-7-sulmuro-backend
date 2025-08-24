@@ -25,10 +25,10 @@ public class GeminiService {
     @Value("${gemini.model-name}")
     private String modelName;
 
-    private final ObjectMapper objectMapper = new ObjectMapper(); // ObjectMapper 주입
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * 1단계: 이미지에서 핵심 아이템 이름만 빠르게 추출합니다.
+     * 1단계: 이미지에서 핵심 아이템 이름만 빠르게 추출
      */
     public String extractItemNameFromImage(MultipartFile imageFile) throws IOException {
         String textPrompt = "당신은 광장시장 전문 음식 큐레이터입니다. 이 이미지에 보이는 가장 핵심적인 음식 또는 사물의 이름을 한 단어의 명사로만 말해줘. 광장시장에 파는 음식혹은 사물 등 광장시장에 관련이 있을 확률이 높아. 예를 들어 '떡볶이', '육회', '한복' ,'빈대떡' 과 같이 답변해줘.";
@@ -128,7 +128,7 @@ public class GeminiService {
     }
 
     /**
-     * DB 정보와 함께 텍스트 메시지로 Gemini에 후속 질문을 보냅니다.
+     * DB 정보와 함께 텍스트 메시지로 Gemini에 후속 질문을 보냄
      */
     public String askToGeminiWithMessage(String topic, String message, String marketInfoContext, String language) {
         String targetLanguage = getLanguageFullName(language);
@@ -181,7 +181,7 @@ public class GeminiService {
         };
     }
     /**
-     * 블로그 본문 텍스트에서 가게와 메뉴 정보를 추출하여 JSON 형태로 반환합니다. (정확도 개선 버전)
+     * 블로그 본문 텍스트에서 가게와 메뉴 정보를 추출하여 JSON 형태로 반환
      */
     public String extractMarketInfoFromText(String blogContent) {
         String textPrompt = String.format("""
@@ -237,7 +237,7 @@ public class GeminiService {
 
 
     /**
-     * 단순 텍스트 번역을 요청합니다.
+     * 단순 텍스트 번역을 요청
      */
     public String translateText(String sourceLang, String targetLang, String text) {
         String prompt = String.format(
@@ -254,7 +254,7 @@ public class GeminiService {
     }
 
     /**
-     * 번역과 함께 추천 표현 2개를 JSON 형식으로 요청합니다.
+     * 번역과 함께 추천 표현 2개를 JSON 형식으로 요청
      */
     public String translateTextWithRecommendations(String sourceLang, String targetLang, String text) {
 

@@ -21,13 +21,13 @@ public class DBInfoService {
 
     @Transactional(readOnly = true)
     public String getAllMarketInfo() {
-        // 1. 수동으로 입력된 모든 가게 정보와 메뉴를 가져옵니다.
+        // 1. 수동으로 입력된 모든 가게 정보와 메뉴를 가져옴
         List<Store> manualStores = storeRepository.findAllWithMenuItems();
 
-        // 2. 크롤링으로 수집된 모든 가게 정보와 메뉴를 가져옵니다.
+        // 2. 크롤링으로 수집된 모든 가게 정보와 메뉴를 가져옴
         List<CrawlerStore> crawledStores = crawlerStoreRepository.findAllWithMenuItems();
 
-        // 3. 각 정보를 보기 좋은 문자열 형태로 변환합니다.
+        // 3. 각 정보를 보기 좋은 문자열 형태로 변환
         String manualInfo = manualStores.stream()
                 .map(this::formatStoreInfo)
                 .collect(Collectors.joining("\n"));
@@ -36,7 +36,7 @@ public class DBInfoService {
                 .map(this::formatCrawlerStoreInfo)
                 .collect(Collectors.joining("\n"));
 
-        // 4. 두 정보를 하나로 합쳐서 반환합니다.
+        // 4. 두 정보를 하나로 합쳐서 반환
         return Stream.of(manualInfo, crawledInfo)
                 .filter(s -> s != null && !s.isBlank())
                 .collect(Collectors.joining("\n---\n"));

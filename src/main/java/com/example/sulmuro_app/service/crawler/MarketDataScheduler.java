@@ -19,7 +19,7 @@ public class MarketDataScheduler {
     private final CrawledDataService dataService;
 
     /**
-     * 매월 1일 새벽 4시에 자동으로 실행됩니다.
+     * 매월 1일 새벽 4시에 자동으로 실행
      * cron = "[초] [분] [시] [일] [월] [요일]"
      */
     @Scheduled(cron = "0 0 4 1 * *") // 매월 1일 새벽 4시 크롤링동작

@@ -7,10 +7,10 @@ import lombok.Getter;
 public class TranslateRequest {
 
     @NotBlank
-    private String sourceLanguageCode; // 번역할 언어 국가 코드 (e.g., "en")
+    private String sourceLanguageCode; // 번역할 언어 국가 코드 ex)en
 
     @NotBlank
-    private String targetLanguageCode; // 번역 결과로 나올 언어 국가 코드 (e.g., "ko")
+    private String targetLanguageCode; // 번역 결과로 나올 언어 국가 코드 ex)ko
 
     @NotBlank
     private String text; // 번역할 문장
