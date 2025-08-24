@@ -42,8 +42,8 @@ public class ChatService {
         // 1. 1차 이미지 분석으로 itemName만 추출
         String itemName = geminiService.extractItemNameFromImage(imageFile);
 
-        // 2. 추출된 itemName으로 DB에서 관련 가게 정보 조회
-        String marketInfo = marketInfoService.findMarketInfoByItemName(itemName);
+        // 2. itemName으로 특정 가게만 찾는 대신, 전체 가게 정보를 컨텍스트로 제공
+        String marketInfo = dbInfoService.getAllMarketInfo();
 
         // 3. 이미지와 DB 정보를 모두 활용하여 최종 답변 생성
         String finalResponse = geminiService.askToGeminiWithImageAndContext(imageFile, marketInfo,language);
