@@ -22,7 +22,7 @@ public class ChatRoom {
     private Long id;
 
     @Column(nullable = false)
-    private String topic; // 대화 주제 (e.g., "빈대떡")
+    private String topic;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<ChatMessage> messages = new ArrayList<>();

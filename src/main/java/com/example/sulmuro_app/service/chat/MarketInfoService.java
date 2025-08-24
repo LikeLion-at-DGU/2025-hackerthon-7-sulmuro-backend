@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class MarketInfoService {
 
     private final MenuItemRepository menuItemRepository;
-    private final CrawlerMenuItemRepository crawlerMenuItemRepository; // 새로운 Repository 주입
+    private final CrawlerMenuItemRepository crawlerMenuItemRepository; 
 
     @Transactional(readOnly = true)
     public String findMarketInfoByItemName(String itemName) {
@@ -52,7 +52,7 @@ public class MarketInfoService {
                 ))
                 .collect(Collectors.joining("\n"));
 
-        // 두 정보 사이에 구분선을 넣어 합칩니다.
+        // 두 정보 사이에 구분선을 넣어 합침
         return Stream.of(manualInfo, crawledInfo)
                 .filter(s -> s != null && !s.isBlank())
                 .collect(Collectors.joining("\n---\n"));

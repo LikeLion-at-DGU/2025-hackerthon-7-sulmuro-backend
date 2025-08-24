@@ -29,9 +29,8 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ObjectMapper objectMapper;
     private final GeminiService geminiService;
-    private final MarketInfoService marketInfoService; // MarketInfoService 주입
     private final DBInfoService dbInfoService;
-    private static final Logger log = LoggerFactory.getLogger(ChatService.class); // Logger 객체 추가
+    private static final Logger log = LoggerFactory.getLogger(ChatService.class); 
 
     @Transactional
     public StartChatResponse startChat(MultipartFile imageFile,String language) throws IOException {
@@ -69,10 +68,10 @@ public class ChatService {
 
         chatMessageRepository.save(new ChatMessage(chatRoom, "user", request.getMessage()));
 
-        // 특정 주제가 아닌, DB의 모든 가게 정보를 가져옵니다.
+        // 특정 주제가 아닌, DB의 모든 가게 정보를 가져옴
         String marketInfo = dbInfoService.getAllMarketInfo();
 
-        // Gemini에게 '모든 정보'를 참고자료로 하여 답변을 요청합니다.
+        // Gemini에게 '모든 정보'를 참고자료로 하여 답변을 요청
         String aiResponse = geminiService.askToGeminiWithMessage(
                 chatRoom.getTopic(),
                 request.getMessage(),

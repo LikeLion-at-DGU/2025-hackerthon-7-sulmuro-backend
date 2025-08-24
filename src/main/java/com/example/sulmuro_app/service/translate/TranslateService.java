@@ -41,11 +41,9 @@ public class TranslateService {
         );
 
         try {
-            // objectMapper가 JSON을 Map<String, Object> 형태로 변환
             Map<String, Object> resultMap = objectMapper.readValue(jsonResponse, new TypeReference<>() {});
             String translatedText = (String) resultMap.getOrDefault("translatedText", "");
 
-            // recommendations는 List<Map<String, String>> 형태이므로, 이를 List<RecommendationPair>로 변환
             List<Map<String, String>> rawRecommendations = (List<Map<String, String>>) resultMap.getOrDefault("recommendations", Collections.emptyList());
 
             List<RecommendationPair> recommendations = objectMapper.convertValue(rawRecommendations, new TypeReference<List<RecommendationPair>>() {});

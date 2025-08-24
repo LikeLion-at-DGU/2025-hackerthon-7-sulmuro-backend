@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.ArrayList; // 추가
-import java.util.List; // 추가
+import java.util.ArrayList;
+import java.util.List;
 @Getter
 @Entity
-@Table(name = "crawler_store") // 실제 테이블 이름 명시
+@Table(name = "crawler_store")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrawlerStore {
 

@@ -15,7 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CrawledDataService {
 
-    // 의존성을 새로운 Repository로 변경
+
     private final CrawlerStoreRepository crawlerStoreRepository;
     private final CrawlerMenuItemRepository crawlerMenuItemRepository;
 
