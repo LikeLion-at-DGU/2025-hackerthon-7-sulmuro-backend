@@ -78,10 +78,12 @@ public class GeminiService {
         %s
 
         # 규칙 (매우 중요)
-        1.  먼저, 이미지를 분석하여 `itemName`과 `description`을 작성합니다. `description`은 150자 이상 300자 이하로 작성해주세요.
-        2.  다음으로, `itemName`이 "광장시장"과 관련이 있는지 판단합니다.
+        1.  **언어**: 최종 JSON 응답의 모든 텍스트 필드(`itemName`, `description` 등)는 반드시 **%s**로 작성되어야 합니다.
+        2.  **이미지 분석**: 이미지를 분석하여 `itemName`과 `description`을 작성합니다. `description`은 150자 이상 300자 이하로 작성해주세요.
+        3.  **광장시장 관련성 판단**:
             - **CASE 1: `itemName`과 관련된 메뉴를 "# 제공된 광장시장 가게 정보"에서 찾을 수 있는 경우:**
-                - `isGwangjangItem`을 `true`로 설정합니다.
+             - **(중요!) `itemName`과 정확히 일치하는 메뉴가 없더라도, '아이스 커피'와 '커피'처럼 의미적으로나 카테고리적으로 관련된 메뉴를 판매하는 가게를 당신의 추론 능력을 발휘하여 찾아내야 합니다.**
+             - `isGwangjangItem`을 `true`로 설정합니다.
 %s
 %s
             - **CASE 2: `itemName`이 광장시장과 관련은 있지만, "# 제공된 광장시장 가게 정보"에 해당하는 가게가 없는 경우:**
@@ -93,9 +95,8 @@ public class GeminiService {
                 - `averagePrice`를 "정보 없음"(으)로 설정합니다.
                 - `recommendedStores`는 반드시 빈 배열 `[]`로 설정합니다.
                 - `description`의 마지막에 **"이 사진은 광장시장과 관련이 없는 것 같습니다."** 라는 문장을 반드시 추가해주세요.
-        3.  마지막으로, `itemName`과 관련된 `recommendedquestion`을 3개 생성합니다.
-        4.  응답은 다른 설명 없이, 아래 예시와 같은 순수 JSON 객체 형식이어야 합니다.
-
+        4.  **추천 질문**: `itemName`과 관련된 `recommendedquestion`을 3개 생성합니다.
+        5.  **출력 형식**: 응답은 다른 설명 없이, 아래 예시와 같은 순수 JSON 객체 형식이어야 합니다.
             # 응답예시
             {
               "itemName": "Bindaetteok",
@@ -112,7 +113,7 @@ public class GeminiService {
                 { "question": "Any precautions when eating?" }
               ]
             }
-            """, targetLanguage, marketInfoContext, priceFormattingInstruction, storeFormattingInstruction);
+            """, targetLanguage,marketInfoContext, targetLanguage, priceFormattingInstruction, storeFormattingInstruction);
 
         byte[] imageBytes = imageFile.getBytes();
         Client client = Client.builder().apiKey(apiKey).build();
@@ -157,7 +158,7 @@ public class GeminiService {
             - **CASE 1: 질문이 '# 참고자료'와 관련 있을 때:** '# 참고자료'에 있는 정보를 우선적으로 활용하여 답변을 구성하세요.
             - **CASE 2: 질문이 '# 참고자료'와 관련 없을 때 (대화 주제가 바뀌었을 때):** '# 참고자료'의 내용에 얽매이지 말고, 당신의 폭넓은 자체 지식을 활용하여 질문에 직접 답변하세요. 광장시장에 대한 정보라면 무엇이든 좋습니다. 예를 들어 사용자가 '카페'를 물어보면, 당신이 아는 광장시장의 카페를 추천해야 합니다.
         3.  **관련성 판단**: 만약 사용자의 질문이 광장시장과 전혀 관련이 없다고 판단되면, 당신의 판단에 따라 자유롭게 답변하되, 응답의 맨 마지막에 다음 문장을 **반드시 정확하게** 추가해주세요: "%s"
-        4.  **언어 및 길이**: 전체 답변은 반드시 **%s**로 작성해야 하며, 150자를 넘지 않아야 합니다.
+        4.  **언어 및 길이 (매우 중요)**: 전체 답변은 반드시 **%s**로 작성해야 하며, **200자 이내로 매우 짧고 간결하게 요약해야 합니다.**
         5.  **형식 주의**: 답변은 꾸밈없는 순수 텍스트(Plain Text)여야 합니다. 절대로 마크다운(`**`, `*` 등)을 사용하지 마세요.
 
         # 사용자의 마지막 질문
