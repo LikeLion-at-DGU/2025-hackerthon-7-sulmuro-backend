@@ -36,7 +36,7 @@ public class Article {
     @Column
     private Location location;
 
-    // ====== 연관관계: Article (1) : (N) ArticleBlock ======
+
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("position ASC, blockId ASC")
     private List<ArticleBlock> blocks = new ArrayList<>();
@@ -45,18 +45,16 @@ public class Article {
     @Transient
     private List<String> imageUrls;
 
-    // ====== 생성자 ======
     protected Article() {} // JPA 기본 생성자
 
     public Article(String title, String subTitle, Theme theme, LocalDateTime createdAt, Location location) {
         this.title = title;
         this.subTitle = subTitle;
         this.theme = theme;
-        this.createdAt = createdAt; // null이면 @PrePersist에서 now() 세팅
+        this.createdAt = createdAt;
         this.location = location;
     }
 
-    // ====== 라이프사이클 콜백 ======
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
@@ -64,7 +62,6 @@ public class Article {
         }
     }
 
-    // ====== 연관관계 편의 메서드 (여기에 추가!) ======
     public void addBlock(ArticleBlock block) {
         if (block == null) return;
         this.blocks.add(block);
@@ -77,8 +74,6 @@ public class Article {
         block.setArticle(null);
     }
 
-    // ====== 조회용 유틸 ======
-    /** type=IMAGE 인 블록의 data(이미지 URL) 중 최대 5개 반환 */
     public List<String> getImageUrls() {
         if (blocks == null) return List.of();
         return blocks.stream()
@@ -89,7 +84,6 @@ public class Article {
                 .toList();
     }
 
-    // ====== getter/setter ======
     public Long getArticleId() { return articleId; }
     public String getTitle() { return title; }
     public String getSubTitle() { return subTitle; }

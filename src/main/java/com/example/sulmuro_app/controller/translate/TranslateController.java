@@ -20,9 +20,6 @@ public class TranslateController {
 
     private final TranslateService translateService;
 
-    /**
-     * 단순 번역 API
-     */
     @PostMapping
     public ApiResponse<TranslateResponse> translateText(
             @Valid @RequestBody TranslateRequest request
@@ -31,9 +28,7 @@ public class TranslateController {
         return ApiResponse.success("번역이 완료되었습니다.", response);
     }
 
-    /**
-     * 번역 및 추천 표현 제안 ("TRY THIS") API
-     */
+
     @PostMapping("/recommend")
     public ApiResponse<TranslateRecommendResponse> translateTextWithRecommend(
             @Valid @RequestBody TranslateRequest request

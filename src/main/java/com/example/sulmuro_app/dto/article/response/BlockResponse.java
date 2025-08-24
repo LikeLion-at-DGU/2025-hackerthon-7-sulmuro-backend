@@ -1,4 +1,4 @@
-package com.example.sulmuro_app.dto.article.block.response;
+package com.example.sulmuro_app.dto.article.response;
 
 import com.example.sulmuro_app.domain.article.ArticleBlock;
 import com.example.sulmuro_app.domain.bin.BlockType;

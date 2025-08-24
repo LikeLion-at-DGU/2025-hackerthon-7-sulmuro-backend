@@ -43,7 +43,6 @@ naver:
 # ==================================================================
 
 deepl:
-  # free: https://api-free.deepl.com , pro: https://api.deepl.com
   baseUrl: ${DEEPL_ID}
   authKey: ${DEEPL_AUTH_KEY}  # 터미널/서버 환경변수로 주입
   formality: default          # default|more|less (ko/ja/zh는 무시됨)

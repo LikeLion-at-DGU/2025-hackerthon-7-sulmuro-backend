@@ -44,7 +44,6 @@ public class PlaceImageService {
         List<PlaceImage> saved = new ArrayList<>();
         for (MultipartFile f : files) {
             if (f.isEmpty()) continue;
-            // 간단한 이미지 MIME 체크(선택)
             if (f.getContentType() == null || !f.getContentType().startsWith("image/")) {
                 throw new IllegalArgumentException("only image files are allowed");
             }
