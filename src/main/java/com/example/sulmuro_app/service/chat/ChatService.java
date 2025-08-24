@@ -30,10 +30,11 @@ public class ChatService {
     private final ObjectMapper objectMapper;
     private final GeminiService geminiService;
     private final MarketInfoService marketInfoService; // MarketInfoService 주입
+    private final DBInfoService dbInfoService;
     private static final Logger log = LoggerFactory.getLogger(ChatService.class); // Logger 객체 추가
 
     @Transactional
-    public StartChatResponse startChat(MultipartFile imageFile) throws IOException {
+    public StartChatResponse startChat(MultipartFile imageFile,String language) throws IOException {
         if (imageFile.isEmpty()) {
             throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
         }
@@ -45,12 +46,12 @@ public class ChatService {
         String marketInfo = marketInfoService.findMarketInfoByItemName(itemName);
 
         // 3. 이미지와 DB 정보를 모두 활용하여 최종 답변 생성
-        String finalResponse = geminiService.askToGeminiWithImageAndContext(imageFile, marketInfo);
+        String finalResponse = geminiService.askToGeminiWithImageAndContext(imageFile, marketInfo,language);
 
         // Gemini 응답 가공 및 저장
         String cleanedJsonString = cleanGeminiResponse(finalResponse);
 
-        // ⭐️⭐️⭐️ [해결 방법] 어떤 응답이 왔는지 여기서 로그로 확인! ⭐️⭐️⭐️
+
         log.info("Gemini 최종 응답 (파싱 전): {}", cleanedJsonString);
 
         JsonNode jsonNode = parseJson(cleanedJsonString);
@@ -62,22 +63,28 @@ public class ChatService {
         return new StartChatResponse(newChatRoom.getId(), jsonNode);
     }
     @Transactional
-    public ChatResponse postMessage(Long roomId, PostMessageRequest request) {
+    public ChatResponse postMessage(Long roomId, PostMessageRequest request,String language) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 채팅방입니다."));
 
         chatMessageRepository.save(new ChatMessage(chatRoom, "user", request.getMessage()));
 
-        // DB에서 채팅 주제와 관련된 가게 정보를 조회
-        String marketInfo = marketInfoService.findMarketInfoByItemName(chatRoom.getTopic());
+        // 특정 주제가 아닌, DB의 모든 가게 정보를 가져옵니다.
+        String marketInfo = dbInfoService.getAllMarketInfo();
 
-        // 조회된 정보와 함께 Gemini에 질문
-        String aiResponse = geminiService.askToGeminiWithMessage(chatRoom.getTopic(), request.getMessage(), marketInfo);
+        // Gemini에게 '모든 정보'를 참고자료로 하여 답변을 요청합니다.
+        String aiResponse = geminiService.askToGeminiWithMessage(
+                chatRoom.getTopic(),
+                request.getMessage(),
+                marketInfo,
+                language
+        );
 
         chatMessageRepository.save(new ChatMessage(chatRoom, "ai", aiResponse));
 
         return new ChatResponse(aiResponse);
     }
+
 
     private String cleanGeminiResponse(String rawResponse) {
         String cleaned = rawResponse.trim();
