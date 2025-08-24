@@ -6,7 +6,7 @@ import com.example.sulmuro_app.domain.bin.BlockType;
 import com.example.sulmuro_app.dto.article.block.request.BlockCreateRequest;
 import com.example.sulmuro_app.dto.article.block.response.BlockResponse;
 import com.example.sulmuro_app.repository.article.ArticleBlockRepository;
-import com.example.sulmuro_app.repository.article.ArticleRepository;
+import com.example.sulmuro_app.domain.article.ArticleRepository;
 import com.example.sulmuro_app.service.storage.FileStorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
