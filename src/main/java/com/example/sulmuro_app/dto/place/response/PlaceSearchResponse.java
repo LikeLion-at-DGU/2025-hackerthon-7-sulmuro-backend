@@ -2,6 +2,7 @@ package com.example.sulmuro_app.dto.place.response;
 
 import com.example.sulmuro_app.domain.bin.Location;
 import com.example.sulmuro_app.domain.bin.PlaceCategory;
+import com.example.sulmuro_app.i18n.Trans;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,16 +10,16 @@ import java.util.List;
 public class PlaceSearchResponse {
 
     private Long id;
-
+    @Trans
     private String name;
 
     private PlaceCategory category;
-
+    @Trans
     private String content;
 
     private BigDecimal lat;
     private BigDecimal lng;
-
+    @Trans
     private String address;
 
     private Location location;
