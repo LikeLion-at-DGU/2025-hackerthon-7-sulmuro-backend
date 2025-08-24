@@ -34,9 +34,9 @@ public class FileStorageService {
                 Files.copy(in, dest, REPLACE_EXISTING);
             }
 
-            String rel = (safeDir + "/" + filename).replace("\\", "/");     // 상대경로
+            String rel = (safeDir + "/" + filename).replace("\\", "/");
             String baseUrl = publicBaseUrl.endsWith("/") ? publicBaseUrl : publicBaseUrl + "/";
-            return baseUrl + rel;                                           // 절대 URL 반환
+            return baseUrl + rel;
         } catch (Exception e) {
             throw new RuntimeException("파일 업로드 실패", e);
         }

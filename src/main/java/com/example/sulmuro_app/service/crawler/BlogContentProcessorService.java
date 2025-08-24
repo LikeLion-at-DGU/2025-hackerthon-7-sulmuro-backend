@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BlogContentProcessorService {
 
-    private final GeminiService geminiService; // 기존 GeminiService를 재사용
+    private final GeminiService geminiService;
     private final ObjectMapper objectMapper;
 
     public List<Map<String, Object>> processBlogContent(List<String> blogDescriptions) {

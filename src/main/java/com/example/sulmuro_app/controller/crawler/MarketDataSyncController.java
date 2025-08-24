@@ -35,7 +35,7 @@ public class MarketDataSyncController {
             int start = (i * CHUNK_SIZE) + 1; // start 파라미터 계산 (1, 21, 41, 61, 81)
             log.info("... {}번째 청크 처리 (시작 위치: {})", i + 1, start);
 
-            // 1. 블로그 데이터 20개씩 크롤링
+            // 블로그 데이터 20개씩 크롤링
             List<String> descriptions = crawlerService.fetchBlogDescriptions("광장시장", CHUNK_SIZE, start);
 
             if(descriptions.isEmpty()){
@@ -43,14 +43,13 @@ public class MarketDataSyncController {
                 break;
             }
 
-            // 2. 20개 데이터에서 정보 추출 (Gemini API 호출 1회)
+            // 20개 데이터에서 정보 추출 (Gemini API 호출 1회)
             List<Map<String, Object>> storeInfos = processorService.processBlogContent(descriptions);
 
-            // 3. 추출된 정보를 DB에 저장
+            // 추출된 정보를 DB에 저장
             dataService.saveCrawledData(storeInfos);
 
-            // (선택사항) API 호출 사이에 약간의 딜레이를 주어 서버 부하를 줄일 수 있습니다.
-            // try { Thread.sleep(1000); } catch (InterruptedException e) { /* ... */ }
+
         }
 
         log.info("블로그 데이터 동기화가 성공적으로 완료되었습니다.");
