@@ -17,16 +17,18 @@ public class ChatController {
     private final ChatService chatService;
     @PostMapping("/start")
     public StartChatResponse startChatWithImage(
-            @RequestParam("image") MultipartFile imageFile
+            @RequestParam("image") MultipartFile imageFile,
+            @RequestHeader("Accept-Language") String language
     ) throws IOException {
-        return chatService.startChat(imageFile);
+        return chatService.startChat(imageFile,language);
     }
 
     @PostMapping("/{roomId}/message")
     public ChatResponse postMessage(
             @PathVariable Long roomId,
-            @RequestBody PostMessageRequest request
+            @RequestBody PostMessageRequest request,
+            @RequestHeader("Accept-Language") String language
     ) {
-        return chatService.postMessage(roomId, request);
+        return chatService.postMessage(roomId, request, language);
     }
 }
