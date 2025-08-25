@@ -38,8 +38,6 @@ public class ChatService {
             throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
         }
 
-        // 1. 1차 이미지 분석으로 itemName만 추출
-        String itemName = geminiService.extractItemNameFromImage(imageFile);
 
         // 2. itemName으로 특정 가게만 찾는 대신, 전체 가게 정보를 컨텍스트로 제공
         String marketInfo = dbInfoService.getAllMarketInfo();
