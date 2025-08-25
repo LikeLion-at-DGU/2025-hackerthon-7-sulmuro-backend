@@ -3,6 +3,8 @@ package com.example.sulmuro_app.config;
 import com.example.sulmuro_app.dto.bin.ApiResponse;
 import com.example.sulmuro_app.exception.*;
 import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -10,11 +12,22 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.ResourceAccessException;
+import java.net.SocketTimeoutException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    //외부 API 호출 타임아웃 예외 처리
+    @ExceptionHandler({SocketTimeoutException.class, ResourceAccessException.class})
+    public ResponseEntity<ApiResponse<Void>> handleTimeoutException(Exception ex) {
+        log.warn("API 호출 시간 초과: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("요청 시간이 초과되었습니다. 다시 시도해주세요.", HttpStatus.INTERNAL_SERVER_ERROR.value()));
+    }
     // 1) 커스텀 비즈니스 예외
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponse<Void>> handleBusiness(BusinessException ex) {
