@@ -9,5 +9,6 @@ import java.util.List;
 public interface PlaceImageRepository extends JpaRepository<PlaceImage, Long> {
     List<PlaceImage> findByPlace_PlaceIdOrderByCreatedAtDesc(Long placeId);
     List<PlaceImage> findByPlaceIn(Collection<Place> places);
+    List<PlaceImage> findByPlace_PlaceIdInOrderByIsCoverDescCreatedAtAsc(Collection<Long> placeIds);
 
 }
