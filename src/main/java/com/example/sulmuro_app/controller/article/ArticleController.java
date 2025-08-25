@@ -5,11 +5,15 @@ import com.example.sulmuro_app.dto.article.request.ArticleSearchRequest;
 import com.example.sulmuro_app.dto.article.response.ArticleListItemResponse;
 import com.example.sulmuro_app.dto.article.response.ArticleResponse;
 import com.example.sulmuro_app.dto.bin.ApiResponse;
+import com.example.sulmuro_app.dto.place.response.PlaceDetailResponse;
+import com.example.sulmuro_app.dto.place.response.PlaceSearchResponse;
 import com.example.sulmuro_app.i18n.TranslateResponse;
+import com.example.sulmuro_app.service.article.ArticlePlaceService;
 import com.example.sulmuro_app.service.article.ArticleService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +23,11 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
-    public ArticleController(ArticleService articleService) {
+    private final ArticlePlaceService articlePlaceService;
+
+    public ArticleController(ArticleService articleService, ArticlePlaceService articlePlaceService) {
         this.articleService = articleService;
+        this.articlePlaceService = articlePlaceService;
     }
 
     @PostMapping
@@ -43,6 +50,14 @@ public class ArticleController {
     public ApiResponse<ArticleResponse> getOne(@PathVariable Long articleId) {
         ArticleResponse res = articleService.getArticle(articleId);
         return  ApiResponse.success("아티클을 불러왔습니다.",  res);
+    }
+
+    @GetMapping("/{articleId}/recommend") // recomend 오타 주의!
+    public ResponseEntity<ApiResponse<List<PlaceSearchResponse>>> getPlaces(
+            @PathVariable("articleId") Long articleId
+    ) {
+        var data = articlePlaceService.getRecommendedPlaces(articleId);
+        return ResponseEntity.ok(ApiResponse.success("장소 목록을 검색하여 불러왔습니다.", data));
     }
 
     @GetMapping
