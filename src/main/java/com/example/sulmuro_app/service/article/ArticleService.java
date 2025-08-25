@@ -40,10 +40,8 @@ public class ArticleService {
     public List<ArticleResponse> getArticlesByIds(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return List.of();
 
-        // 여러 개 id를 한 번에 조회
         List<Article> articles = articleRepository.findByArticleIdIn(ids);
 
-        // ArticleResponse.of(...)는 네가 이미 쓰고 있으니까 재활용
         return articles.stream()
                 .map(ArticleResponse::of)
                 .toList();
